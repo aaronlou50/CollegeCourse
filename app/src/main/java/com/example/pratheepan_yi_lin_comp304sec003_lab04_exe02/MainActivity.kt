@@ -121,7 +121,7 @@ fun ProgramList(programs: List<Program>, onProgramSelected: (Program) -> Unit = 
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(text = course.name, style = MaterialTheme.typography.headlineLarge)
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = course.description, style = MaterialTheme.typography.bodyLarge)
+
                         }
                     }
                     Divider()
