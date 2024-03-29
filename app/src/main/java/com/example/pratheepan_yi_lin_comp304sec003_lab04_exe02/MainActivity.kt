@@ -9,10 +9,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -53,7 +57,7 @@ fun AppNavigation() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "programs") {
         composable("programs") {
-            // Assuming `mockPrograms` is your list of programs
+
             ProgramList(programs = mockPrograms, onProgramSelected = { program ->
                 navController.navigate("courses/${program.id}")
             })
@@ -78,53 +82,46 @@ fun AppNavigation() {
 }
 @Composable
 fun ProgramList(programs: List<Program>, onProgramSelected: (Program) -> Unit = {}) {
-    LazyColumn {
+    LazyColumn(modifier = Modifier.padding(8.dp)) {
         items(programs) { program ->
-            // Your existing UI logic, assuming you have Text or some other composable here
-            Text(text = program.name, modifier = Modifier.clickable { onProgramSelected(program) })
+            Card(
+                modifier = Modifier
+                    .padding(vertical = 4.dp, horizontal = 8.dp)
+                    .clickable { onProgramSelected(program) } // Apply clickable to the entire Card
+                    .fillMaxWidth(), // Ensure the Card fills the width to make the entire row clickable
+                elevation = CardDefaults.cardElevation()
+            ) {
+                Column(modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()) { // Make sure the Column also fills the width
+                    Text(text = program.name, style = MaterialTheme.typography.headlineLarge)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(text = program.description, style = MaterialTheme.typography.bodyLarge)
+                }
+            }
         }
     }
 }
 
-        @Composable
-        fun ProgramCard(program: Program) {
-            Column {
-                Text(
-                    text = program.name,
-                    style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.secondary)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                var isExpanded by remember { mutableStateOf(false) }
-                val surfaceColor by animateColorAsState(
-                    if (isExpanded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-                )
-                Surface(shape = MaterialTheme.shapes.medium,
 
-                    color = surfaceColor,
-                    modifier = Modifier
-                        .shadow(elevation = 4.dp) // Apply shadow to mimic elevation
-                        .fillMaxSize()
-                        .padding(top = 16.dp, end = 16.dp)
-                        .clickable { isExpanded = !isExpanded }) {
-                    Text(
-                        text = program.description,
-                        modifier = Modifier
-                            .padding(start = 10.dp, top = 15.dp, end = 10.dp, bottom = 16.dp)
-                            .animateContentSize(),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        maxLines = if (isExpanded) Int.MAX_VALUE else 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
-        }
 
         @Composable
         fun CourseList(courses: List<Course>, onCourseSelected: (Course) -> Unit) {
             LazyColumn {
                 items(courses) { course ->
-                    Text(course.name, Modifier.clickable { onCourseSelected(course) })
+                    Card(
+                        modifier = Modifier
+                            .padding(vertical = 4.dp, horizontal = 8.dp)
+                            .fillMaxWidth() // Ensures the Card takes up the full width
+                            .clickable { onCourseSelected(course) }, // Makes the entire Card clickable
+                        elevation = CardDefaults.cardElevation()
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(text = course.name, style = MaterialTheme.typography.headlineLarge)
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(text = course.description, style = MaterialTheme.typography.bodyLarge)
+                        }
+                    }
                     Divider()
                 }
             }
@@ -132,9 +129,12 @@ fun ProgramList(programs: List<Program>, onProgramSelected: (Program) -> Unit = 
 
         @Composable
         fun CourseDescription(course: Course) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(course.name, style = MaterialTheme.typography.headlineMedium)
+            Column(modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()) {
+                Text(course.name, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = 8.dp))
                 Text(course.description, style = MaterialTheme.typography.bodyLarge)
+
             }
         }
 
