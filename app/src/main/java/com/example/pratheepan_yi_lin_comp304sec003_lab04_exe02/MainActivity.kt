@@ -83,6 +83,7 @@ fun AppNavigation() {
 @Composable
 fun ProgramList(programs: List<Program>, onProgramSelected: (Program) -> Unit = {}) {
     LazyColumn(modifier = Modifier.padding(8.dp)) {
+
         items(programs) { program ->
             Card(
                 modifier = Modifier
@@ -93,7 +94,8 @@ fun ProgramList(programs: List<Program>, onProgramSelected: (Program) -> Unit = 
             ) {
                 Column(modifier = Modifier
                     .padding(16.dp)
-                    .fillMaxWidth()) { // Make sure the Column also fills the width
+                    .fillMaxWidth()
+                ) { // Make sure the Column also fills the width
                     Text(text = program.name, style = MaterialTheme.typography.headlineLarge)
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(text = program.description, style = MaterialTheme.typography.bodyLarge)
