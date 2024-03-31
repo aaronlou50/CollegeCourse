@@ -53,5 +53,7 @@ val mockPrograms = listOf(
     Program(4, "Information Technology", "Dive into the essentials of IT operations and management.", mockCoursesIT),
     Program(5, "Data Science", "Master the skills to analyze and visualize data.", mockCoursesDataScience),
     Program(6, "Web Development", "Build and secure modern web applications.", mockCoursesWebDev),
+    Program(8, "Cybersecurity", "Protect digital assets from cyber threats.", mockCoursesCybersecurity),
     Program(7, "Cybersecurity", "Protect digital assets from cyber threats.", mockCoursesCybersecurity)
+
 )

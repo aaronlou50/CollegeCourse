@@ -3,8 +3,7 @@ package com.example.pratheepan_yi_lin_comp304sec003_lab04_exe02
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -26,15 +24,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -46,7 +41,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Pratheepan_yi_lin_comp304sec003_lab04_exe02Theme {
-                AppNavigation()
+                val lightPurple = Color(0xFF009688)
+
+                Surface(color = lightPurple) {
+                    AppNavigation()
+                }
             }
         }
     }
@@ -66,9 +65,7 @@ fun AppNavigation() {
             val programId = backStackEntry.arguments?.getString("programId")?.toInt() ?: return@composable
             val program = mockPrograms.find { it.id == programId }
             program?.let {
-                CourseList(courses = it.courses, onCourseSelected = { course ->
-                    navController.navigate("courseDescription/${course.id}")
-                })
+                CourseList(courses = it.courses)
             }
         }
         composable("courseDescription/{courseId}") { backStackEntry ->
@@ -82,74 +79,146 @@ fun AppNavigation() {
 }
 @Composable
 fun ProgramList(programs: List<Program>, onProgramSelected: (Program) -> Unit = {}) {
-    LazyColumn(modifier = Modifier.padding(8.dp)) {
-
+    val textColor = Color(0xFF05221F)
+    LazyColumn(modifier = Modifier.padding(3.dp)
+        .fillMaxSize()
+        .background(Color(0xFF009688))) {
+        item{
+            Text(
+                text = "Centennial College\nProgram List",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+            Divider(color = Color.White, thickness = 2.dp)
+        }
         items(programs) { program ->
+            var isProgramExpanded by remember { mutableStateOf(false) }
+
             Card(
                 modifier = Modifier
                     .padding(vertical = 4.dp, horizontal = 8.dp)
-                    .clickable { onProgramSelected(program) } // Apply clickable to the entire Card
-                    .fillMaxWidth(), // Ensure the Card fills the width to make the entire row clickable
+                    .clickable { isProgramExpanded = !isProgramExpanded }
+                    .fillMaxWidth(),
+
                 elevation = CardDefaults.cardElevation()
             ) {
-                Column(modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-                ) { // Make sure the Column also fills the width
+                Column(modifier = Modifier.padding(16.dp)) {
                     Text(text = program.name, style = MaterialTheme.typography.headlineLarge)
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(text = program.description, style = MaterialTheme.typography.bodyLarge)
+
+                    if (isProgramExpanded) {
+
+                        program.courses.forEach { course ->
+                            var isCourseExpanded by remember { mutableStateOf(false) }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = course.name,
+                                style = MaterialTheme.typography.headlineSmall,
+                                modifier = Modifier
+                                    .clickable { isCourseExpanded = !isCourseExpanded }
+                                    .padding(vertical = 4.dp)
+                            )
+
+
+                            if (isCourseExpanded) {
+                                Text(
+                                    text = course.description,
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        color = textColor,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                )
+                            }
+                        }
+                    }
                 }
+            }
+            if (isProgramExpanded) {
+                Divider(modifier = Modifier.padding(vertical = 4.dp))
             }
         }
     }
 }
 
 
+@Composable
+fun CourseList(courses: List<Course>) {
+    val textColor = Color(0xFF05221F)
+    LazyColumn {
+        items(courses) { course ->
+            var isExpanded by remember { mutableStateOf(false) }
 
-        @Composable
-        fun CourseList(courses: List<Course>, onCourseSelected: (Course) -> Unit) {
-            LazyColumn {
-                items(courses) { course ->
-                    Card(
-                        modifier = Modifier
-                            .padding(vertical = 4.dp, horizontal = 8.dp)
-                            .fillMaxWidth() // Ensures the Card takes up the full width
-                            .clickable { onCourseSelected(course) }, // Makes the entire Card clickable
-                        elevation = CardDefaults.cardElevation()
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = course.name, style = MaterialTheme.typography.headlineLarge)
-                            Spacer(modifier = Modifier.height(4.dp))
+            Card(
+                modifier = Modifier
+                    .padding(vertical = 4.dp, horizontal = 8.dp)
+                    .fillMaxWidth()
+                    .clickable { isExpanded = !isExpanded },
+                elevation = CardDefaults.cardElevation()
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(text = course.name, style = MaterialTheme.typography.headlineSmall)
+                    Spacer(modifier = Modifier.height(4.dp))
 
-                        }
+                    if (isExpanded) {
+                        Text(
+                            text = course.description,
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = textColor,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
                     }
-                    Divider()
                 }
             }
-        }
 
-        @Composable
-        fun CourseDescription(course: Course) {
-            Column(modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()) {
-                Text(course.name, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = 8.dp))
-                Text(course.description, style = MaterialTheme.typography.bodyLarge)
-
+            if (isExpanded) {
+                Divider()
             }
         }
+    }
+}
+@Composable
+fun CourseDescription(course: Course) {
+
+    val textColor = Color(0xFF05221F)
+
+    Column(modifier = Modifier
+        .padding(16.dp)
+        .fillMaxWidth()) {
+        Text(
+            text = course.name,
+            style = MaterialTheme.typography.headlineSmall.copy(
+                color = textColor,
+                fontWeight = FontWeight.Bold
+            ),
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Text(
+            text = course.description,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                color = textColor,
+                fontWeight = FontWeight.Bold
+            )
+        )
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewProgramCard() {
-    // Example courses to include in your programs
+
     val exampleCourses = listOf(
         Course(1, "Example Course 1", "An example description for Course 1."),
         Course(2, "Example Course 2", "An example description for Course 2.")
     )
 
-    // Updated program instances with all required parameters
+
     val programs = listOf(
         Program(1, "Sample Program 1", "This is the first sample program.", exampleCourses),
         Program(2, "Sample Program 2", "This is the second sample program.", exampleCourses)
